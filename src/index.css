@@ -1,0 +1,57 @@
+@import './styles/tokens/colors.css';
+@import './styles/tokens/fonts.css';
+@import './styles/tokens/typography.css';
+@import './styles/tokens/layout.css';
+@import 'tailwindcss';
+
+* {
+	box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+	height: 100%;
+	margin: 0;
+}
+
+body {
+	font-family: var(--font-intl);
+	color: var(--text-body);
+	background: var(--surface-page);
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
+}
+
+/* App-local convenience tokens for the calendar brand palette (Poppins / cAH print look) */
+:root {
+	--cal-ink: #1d1d1f;
+	--cal-gold: #b3905a;
+	--cal-band: #efeadf;
+	--cal-empty: #c7c1b6;
+	--cal-header: #8d887e;
+	--cal-holiday-bg: #f8dada;
+	--cal-holiday-x: #ee382e;
+	--cal-muted: #6d6960;
+}
+
+/* Gold spinner keyframe reused by loaders */
+@keyframes cah-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+/* Discreet scrollbars, matching the intranet chrome */
+::-webkit-scrollbar {
+	width: 10px;
+	height: 10px;
+}
+::-webkit-scrollbar-thumb {
+	background: var(--zinc-300);
+	border-radius: 9999px;
+	border: 2px solid #fff;
+}
+::-webkit-scrollbar-thumb:hover {
+	background: var(--zinc-400);
+}

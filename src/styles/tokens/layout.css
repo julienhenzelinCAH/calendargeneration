@@ -1,0 +1,35 @@
+/* cAH Intranet — Spacing, radii, shadows, layout tokens */
+
+:root {
+	/* Radii */
+	--radius-sm: 6px;      /* rounded-md — chips, modal buttons */
+	--radius-md: 8px;      /* rounded-lg — buttons, inputs, nav items, modals */
+	--radius-lg: 12px;     /* rounded-xl — cards */
+	--radius-xl: 16px;     /* rounded-2xl — dashboard list cards */
+	--radius-full: 9999px; /* pills, icon buttons, avatars */
+
+	/* Shadows */
+	--shadow-card: 0 1px 2px 0 rgba(0, 0, 0, 0.05);                    /* shadow-sm */
+	--shadow-nav-active: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+	--shadow-menu: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1); /* shadow-lg */
+	--shadow-modal: 0 25px 50px -12px rgba(0, 0, 0, 0.25);             /* shadow-2xl */
+	--shadow-login-panel: 0 2px 24px 0 rgba(0, 0, 0, 0.2);
+	--shadow-date-upcoming: 0 2px 8px -2px rgba(14, 165, 233, 0.15);
+
+	/* Layout */
+	--sidebar-width: 200px;
+	--sidebar-width-collapsed: 60px;
+	--topbar-height: 56px;
+	--container-max: 1250px;
+
+	/* Control sizes (desktop) */
+	--control-h-primary: 56px;   /* main buttons & form fields h-14 */
+	--control-h-secondary: 48px; /* secondary buttons h-12 */
+	--card-padding: 32px;        /* cards p-8 */
+
+	/* Motion */
+	--ease-sidebar: ease-in-out; /* @kind other */
+	--duration-fast: 150ms; /* @kind other */
+	--duration-base: 300ms; /* @kind other */
+	--duration-sidebar: 400ms; /* @kind other */
+}

@@ -1,0 +1,81 @@
+/* cAH Intranet — Color tokens
+   Source of truth: cahFrontend/src/styles.css (@theme) in EPSN-Sarl/cAHIntraV3 */
+
+:root {
+	/* ——— Brand core ——— */
+	--color-gold: #CA9E67;            /* "mygold" — primary brand/action color */
+	--color-gold-hover: #A9783B;      /* "hgold" — hover state of gold */
+	--color-creme: rgba(202, 158, 103, 0.1); /* "creme" — tinted page/panel background */
+	--color-ciel: rgb(74, 143, 228);  /* "ciel" — secondary accent (links, calendar, dates) */
+
+	/* ——— School / entity colors ——— */
+	--color-epsn: #43AA8B;
+	--color-epsn-hover: #216051;
+	--color-epsh: #514898;
+	--color-epsh-hover: #403789;
+	--color-apmt: #2673C1;
+	--color-apmt-hover: #1a4f85;
+	--color-mandorle: #9BB202;
+	--color-mandorle-hover: #6e7d01;
+	--color-laserre: #4ED6FD;
+
+	/* ——— Neutrals (Tailwind zinc/gray scale, as used in the app) ——— */
+	--zinc-50: #fafafa;
+	--zinc-100: #f4f4f5;
+	--zinc-200: #e4e4e7;
+	--zinc-300: #d4d4d8;
+	--zinc-400: #a1a1aa;
+	--zinc-500: #71717a;
+	--zinc-600: #52525b;
+	--zinc-700: #3f3f46;
+	--zinc-800: #27272a;
+	--zinc-900: #18181b;
+	--gray-50: #f9fafb;
+	--gray-100: #f3f4f6;
+	--gray-200: #e5e7eb;
+	--gray-300: #d1d5db;
+	--gray-400: #9ca3af;
+	--gray-500: #6b7280;
+	--gray-600: #4b5563;
+	--gray-900: #111827;
+
+	/* ——— Semantic chip / status hues (Tailwind palette, used in lesson chips) ——— */
+	--blue-50: #eff6ff;
+	--blue-100: #dbeafe;
+	--blue-600: #2563eb;
+	--blue-700: #1d4ed8;
+	--emerald-50: #ecfdf5;
+	--emerald-100: #d1fae5;
+	--emerald-700: #047857;
+	--violet-50: #f5f3ff;
+	--violet-100: #ede9fe;
+	--violet-700: #6d28d9;
+	--indigo-50: #eef2ff;
+	--indigo-100: #e0e7ff;
+	--indigo-700: #4338ca;
+	--amber-50: #fffbeb;
+	--amber-300: #fcd34d;
+	--amber-900: #78350f;
+	--red-50: #fef2f2;
+	--red-200: #fecaca;
+	--red-600: #dc2626;
+	--orange-50: #fff7ed;
+	--orange-600: #ea580c;
+
+	/* ——— Semantic aliases ——— */
+	--surface-page: #ffffff;
+	--surface-tinted: var(--color-creme);
+	--surface-card: #ffffff;
+	--surface-subtle: var(--zinc-50);
+	--border-card: rgba(229, 231, 235, 0.6);  /* gray-200/60 */
+	--border-default: var(--zinc-200);
+	--border-input: var(--color-gold);
+	--text-body: var(--zinc-900);
+	--text-secondary: var(--zinc-600);
+	--text-muted: var(--zinc-500);
+	--text-faint: var(--zinc-400);
+	--text-link: var(--color-ciel);
+	--text-danger: var(--red-600);
+	--action-primary: var(--color-gold);
+	--action-primary-hover: var(--color-gold-hover);
+}
