@@ -1,0 +1,28 @@
+/* cAH Intranet — Typography tokens
+   Usage rules (from norm-styles.txt):
+   - Titles & buttons: --font-intl-book
+   - Body text: --font-intl
+   - Logos, modals, app chrome (sidebar/topbar): --font-euclid / --font-euclid-medium */
+
+:root {
+	--font-intl: 'Suisse intl', sans-serif;
+	--font-intl-book: 'Suisse intl Book', sans-serif;
+	--font-intl-medium: 'Suisse intl Medium', sans-serif;
+	--font-euclid: 'Euclid Flex', sans-serif;
+	--font-euclid-medium: 'Euclid Flex Medium', sans-serif;
+
+	/* Desktop type scale (norm-styles.txt) */
+	--text-h1: 40px;      /* Titres principaux */
+	--text-h2: 32px;      /* Titres secondaires */
+	--text-h3: 24px;      /* Sous-titres */
+	--text-body-lg: 18px; /* Texte courant */
+	--text-body-md: 16px; /* Texte secondaire */
+	--text-body-sm: 14px; /* Petits textes */
+	--text-caption: 13px; /* Nav items, dense UI */
+	--text-micro: 12px;   /* Chips, badges */
+}
+
+body {
+	font-family: var(--font-intl);
+	color: var(--text-body);
+}

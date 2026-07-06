@@ -1,0 +1,61 @@
+/* cAH Intranet — Webfonts (real brand binaries from the cAHIntraV3 repo) */
+
+/* Euclid Flex — logos, app chrome, modals, display */
+@font-face {
+	font-family: 'Euclid Flex';
+	src: url('../../assets/fonts/euclid/EuclidFlex.woff2') format('woff2');
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'Euclid Flex';
+	src: url('../../assets/fonts/euclid/EuclidFlexItalic.woff2') format('woff2');
+	font-weight: normal;
+	font-style: italic;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'Euclid Flex';
+	src: url('../../assets/fonts/euclid/EuclidFlexBold.woff2') format('woff2');
+	font-weight: bold;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'Euclid Flex Medium';
+	src: url('../../assets/fonts/euclid/EuclidFlexMedium.woff2') format('woff2');
+	font-weight: 500;
+	font-style: normal;
+	font-display: swap;
+}
+
+/* Suisse Intl — body text, titles, buttons */
+@font-face {
+	font-family: 'Suisse intl';
+	src: url('../../assets/fonts/suisseIntl/SuisseIntl-Regular.woff2') format('woff2');
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'Suisse intl';
+	src: url('../../assets/fonts/suisseIntl/SuisseIntl-Bold.woff2') format('woff2');
+	font-weight: bold;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'Suisse intl Book';
+	src: url('../../assets/fonts/suisseIntl/SuisseIntl-Book.woff2') format('woff2');
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'Suisse intl Medium';
+	src: url('../../assets/fonts/suisseIntl/SuisseIntl-Medium.woff2') format('woff2');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
