@@ -1,9 +1,11 @@
 import { Button, Card, Icon } from '../ds';
 import { useStore } from '../store/AppStore';
 import { uid } from '../store/storage';
+import { ALL_PROGRAMMES } from '../volees.config';
+import { FontManager } from '../components/FontManager';
 import type { ModuleColor, Programme, VoleeConfig } from '../types';
 
-const PROGS: Programme[] = ['MTE', 'AYU', 'PASS', 'TC'];
+const PROGS: Programme[] = ALL_PROGRAMMES;
 
 const smallInput: React.CSSProperties = {
 	padding: '7px 9px',
@@ -178,6 +180,14 @@ export function Configuration() {
 						</div>
 					))}
 				</div>
+			</Card>
+
+			<Card
+				title="Polices personnalisées"
+				subtitle="Importe tes polices Euclid Flex, Suisse Intl et Poppins (calendrier / PDF)"
+				icon={<Icon name="document-text" size={22} style={{ color: 'var(--color-gold)' }} />}
+			>
+				<FontManager />
 			</Card>
 		</div>
 	);

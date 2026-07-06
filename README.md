@@ -42,7 +42,24 @@ sortant vers `docs.google.com`).
 4. **Fériés & vacances** — tableaux éditables, mémorisés par année scolaire, bouton
    « Pré-remplir (Vaud) » (fériés calculés par le Computus + Jeûne fédéral).
 5. **Configuration** — mapping onglets ↔ programmes, palettes des modules (color pickers),
-   textes de pied de page. Tout est persisté en `localStorage`.
+   textes de pied de page, et **import de polices personnalisées** (Euclid Flex, Suisse Intl,
+   Poppins). Tout est persisté en `localStorage`.
+
+### Programmes pris en charge
+
+`MTE`, `AYU`, `PASS`, `TC`, `KINE`, `REFL`, `CRAN`, `MTC`, `HOM`. Chaque programme a sa palette de
+modules, sa priorité de module et son pied de page par défaut (éditables) :
+
+- **KINE / REFL / CRAN** (méthodes ORTRA TC) : module éponyme + modules du tronc commun
+  (`BP1`, `BP2`, `BS`, `BM1`, `BM2`, `BM3`).
+- **MTC / HOM** (ORTRA MA) : modules `M2`, `M1`, `MP`.
+
+### Polices personnalisées
+
+Dans **Configuration → Polices personnalisées**, importe tes fichiers de police
+(`.woff2`, `.woff`, `.ttf`, `.otf`) pour **Euclid Flex**, **Suisse Intl** et **Poppins**. Elles sont
+mémorisées en `localStorage` et injectées à l'exécution (interface, aperçu, et — pour Poppins —
+PDF vectoriel). Recharge la page après l'import pour qu'elles s'appliquent partout.
 
 ## Ajouter une nouvelle année / volée
 
@@ -60,7 +77,15 @@ sortant vers `docs.google.com`).
   départagée par priorité de programme. Un examen est détecté par
   `examen|évalu|certif|partiel` (sauf « complémentaire »).
 - **Projection +1 an** : décale toutes les dates lues de **+364 jours** (préserve les jours de
-  semaine).
+  semaine). En projection, un cours qui tombe sur un férié (typiquement un férié pascal qui se
+  déplace d'une année à l'autre) est **décalé vers une date libre proche** au lieu d'être retiré —
+  le **nombre de jours est préservé**. Les décalages sont listés dans un panneau « Cours décalés ».
+- **Mercredis 18h–22h en ligne** : les séances du soir / en ligne sont détectées d'après l'horaire
+  (colonne D — mot-clé « en ligne » ou heure de début ≥ 17h) et signalées sur le PDF par un point
+  sur la pastille + une entrée de légende « 18h–22h en ligne ».
+- **Chargement du classeur** : le fetch CSV direct est tenté d'abord ; en cas de blocage CORS, un
+  **repli JSONP** sur l'endpoint JSON gviz (chargé via une balise `<script>`, sans tiers) contourne
+  le CORS. Si tout échoue, l'import manuel de CSV reste disponible.
 - **PDF** : `jspdf` + `svg2pdf.js`, rendu vectoriel, page 1414 × 2000 pleine page. Les polices
   **Poppins** (400/500/600/700) sont chargées à l'exécution depuis le miroir Google Fonts de
   jsDelivr et embarquées dans le PDF ; en cas d'échec réseau, le texte retombe sur la police par

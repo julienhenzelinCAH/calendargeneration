@@ -1,4 +1,4 @@
-export type Programme = 'MTE' | 'AYU' | 'PASS' | 'TC';
+export type Programme = 'MTE' | 'AYU' | 'PASS' | 'TC' | 'KINE' | 'REFL' | 'CRAN' | 'MTC' | 'HOM';
 
 export type ModuleColor = { dark: string; light: string };
 
@@ -18,6 +18,7 @@ export interface Session {
 	description: string; // column G
 	horaire: string; // column D
 	isExam: boolean;
+	evening: boolean; // evening / online session inferred from the horaire (e.g. 18h–22h en ligne)
 }
 
 /** A calendar day of courses after aggregation of its sessions. */
@@ -26,8 +27,19 @@ export interface CourseDay {
 	iso: string; // yyyy-mm-dd
 	module: string; // dominant module for the day
 	isExam: boolean; // any session that day is an exam
+	evening: boolean; // the day is an evening / online session (18h–22h en ligne)
 	sessionCount: number;
 	unknownModule: boolean;
+}
+
+/** A course day moved to a nearby free date to avoid a holiday (projection mode). */
+export interface Shifted {
+	fromIso: string;
+	toIso: string;
+	date: Date; // the new (shifted) date
+	weekday: string;
+	module: string;
+	volee: string;
 }
 
 /** A user-editable holiday (jour férié). */
@@ -57,10 +69,12 @@ export interface Displaced {
 /** Fully computed data for one volée in one school year. */
 export interface VoleeData {
 	config: VoleeConfig;
-	days: CourseDay[]; // kept days (holidays removed)
-	displaced: Displaced[];
+	days: CourseDay[]; // kept days (holidays removed / shifted)
+	displaced: Displaced[]; // dropped because of a holiday collision (non-projection)
+	shifted: Shifted[]; // moved to a nearby free date to preserve the count (projection)
 	moduleCounts: Record<string, number>;
 	total: number;
+	hasEvening: boolean;
 	unknownModules: string[];
 }
 

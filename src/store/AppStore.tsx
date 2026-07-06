@@ -8,9 +8,30 @@ import {
 } from '../volees.config';
 import { buildVoleeData, vaudHolidays } from '../lib/calendar';
 import { fetchSheetTab, sheetIdFromInput } from '../lib/csv';
-import { lsGet, lsSet, uid } from './storage';
+import { lsGet, lsSet } from './storage';
+import { ALL_PROGRAMMES } from '../volees.config';
 
 const PROJECTION_OFFSET = 364;
+
+/** Merge default palettes into a persisted value so newly added programmes/modules appear. */
+function mergePalettes(
+	stored: Record<Programme, Record<string, ModuleColor>>,
+): Record<Programme, Record<string, ModuleColor>> {
+	const out = {} as Record<Programme, Record<string, ModuleColor>>;
+	for (const prog of ALL_PROGRAMMES) {
+		out[prog] = { ...DEFAULT_PALETTES[prog], ...(stored?.[prog] ?? {}) };
+	}
+	return out;
+}
+
+/** Merge default footers so newly added programmes have a default line. */
+function mergeFooters(stored: Record<Programme, string>): Record<Programme, string> {
+	const out = {} as Record<Programme, string>;
+	for (const prog of ALL_PROGRAMMES) {
+		out[prog] = stored?.[prog] ?? DEFAULT_FOOTERS[prog];
+	}
+	return out;
+}
 
 export type TabStatus = 'idle' | 'loading' | 'ok' | 'error';
 
@@ -63,9 +84,11 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
 	const [sheetId, setSheetIdRaw] = useState<string>(() => lsGet('cah_sheetId', DEFAULT_SHEET_ID));
 	const [volees, setVoleesRaw] = useState<VoleeConfig[]>(() => lsGet('cah_volees', DEFAULT_VOLEES));
 	const [palettes, setPalettesRaw] = useState<Record<Programme, Record<string, ModuleColor>>>(() =>
-		lsGet('cah_palettes', DEFAULT_PALETTES),
+		mergePalettes(lsGet('cah_palettes', DEFAULT_PALETTES)),
 	);
-	const [footers, setFootersRaw] = useState<Record<Programme, string>>(() => lsGet('cah_footers', DEFAULT_FOOTERS));
+	const [footers, setFootersRaw] = useState<Record<Programme, string>>(() =>
+		mergeFooters(lsGet('cah_footers', DEFAULT_FOOTERS)),
+	);
 	const [year, setYearRaw] = useState<number>(() => lsGet('cah_year', 2026));
 	const [projection, setProjectionRaw] = useState<boolean>(() => lsGet('cah_projection', false));
 

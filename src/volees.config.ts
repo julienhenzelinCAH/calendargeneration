@@ -14,31 +14,40 @@ export const DEFAULT_VOLEES: VoleeConfig[] = [
 	{ id: 'neon', onglet: 'Com TC Neon 26-26', prog: 'TC', titre: 'Tronc commun Néon', sousTitre: 'Volée Néon (A1) · Ortra TC' },
 ];
 
+export const ALL_PROGRAMMES: Programme[] = ['MTE', 'AYU', 'PASS', 'TC', 'KINE', 'REFL', 'CRAN', 'MTC', 'HOM'];
+
+// Shared module palettes reused across programmes.
+const MA_MODULES: Record<string, ModuleColor> = {
+	M2: { dark: '#2f9d78', light: '#d8eee6' },
+	M1: { dark: '#004898', light: '#d5e2ea' },
+	MP: { dark: '#8c6c46', light: '#ece3d3' },
+};
+const TC_MODULES: Record<string, ModuleColor> = {
+	BM1: { dark: '#0bb4cd', light: '#d4f0f4' },
+	BM2: { dark: '#004898', light: '#d5e2ea' },
+	BM3: { dark: '#7a45e0', light: '#e7def8' },
+	BP1: { dark: '#9c1f8c', light: '#f1d9ef' },
+	BP2: { dark: '#e8701a', light: '#fbe7d5' },
+	BS: { dark: '#1f9d1f', light: '#d7edd0' },
+};
+
 /** Dark colour = number text, light colour = pastille background. Per programme. */
 export const DEFAULT_PALETTES: Record<Programme, Record<string, ModuleColor>> = {
-	MTE: {
-		M2: { dark: '#2f9d78', light: '#d8eee6' },
-		M1: { dark: '#004898', light: '#d5e2ea' },
-		MP: { dark: '#8c6c46', light: '#ece3d3' },
-	},
-	PASS: {
-		M2: { dark: '#2f9d78', light: '#d8eee6' },
-		M1: { dark: '#004898', light: '#d5e2ea' },
-		MP: { dark: '#8c6c46', light: '#ece3d3' },
-	},
+	MTE: { ...MA_MODULES },
+	PASS: { ...MA_MODULES },
 	AYU: {
 		M2: { dark: '#c2682a', light: '#f6e2cf' }, // safran
 		M1: { dark: '#004898', light: '#d5e2ea' },
 		MP: { dark: '#8c6c46', light: '#ece3d3' },
 	},
-	TC: {
-		BM1: { dark: '#0bb4cd', light: '#d4f0f4' },
-		BM2: { dark: '#004898', light: '#d5e2ea' },
-		BM3: { dark: '#7a45e0', light: '#e7def8' },
-		BP1: { dark: '#9c1f8c', light: '#f1d9ef' },
-		BP2: { dark: '#e8701a', light: '#fbe7d5' },
-		BS: { dark: '#1f9d1f', light: '#d7edd0' },
-	},
+	TC: { ...TC_MODULES },
+	// Méthodes de thérapie complémentaire (ORTRA TC) : module éponyme + tronc commun.
+	KINE: { KINE: { dark: '#0d9488', light: '#cfe9e5' }, ...TC_MODULES },
+	REFL: { REFL: { dark: '#be185d', light: '#f7dbe7' }, ...TC_MODULES },
+	CRAN: { CRAN: { dark: '#4338ca', light: '#e0e2f7' }, ...TC_MODULES },
+	// Médecine alternative (ORTRA MA) : mêmes modules que MTE.
+	MTC: { ...MA_MODULES },
+	HOM: { ...MA_MODULES },
 };
 
 /** Module priority for tie-breaking the dominant module of a day. */
@@ -47,16 +56,26 @@ export const MODULE_PRIORITY: Record<Programme, string[]> = {
 	AYU: ['M2', 'M1', 'MP'],
 	PASS: ['M1', 'M2', 'MP'],
 	TC: ['BS', 'BM2', 'BM3', 'BM1', 'BP1', 'BP2'],
+	KINE: ['KINE', 'BS', 'BM2', 'BM3', 'BM1', 'BP1', 'BP2'],
+	REFL: ['REFL', 'BS', 'BM2', 'BM3', 'BM1', 'BP1', 'BP2'],
+	CRAN: ['CRAN', 'BS', 'BM2', 'BM3', 'BM1', 'BP1', 'BP2'],
+	MTC: ['M2', 'M1', 'MP'],
+	HOM: ['M2', 'M1', 'MP'],
 };
 
 export const UNKNOWN_MODULE_COLOR: ModuleColor = { dark: '#71717a', light: '#e4e4e7' };
 
-/** Footer main line per programme (§5.6). */
+/** Footer main line per programme (§5.6). Editable in Configuration. */
 export const DEFAULT_FOOTERS: Record<Programme, string> = {
 	MTE: 'DIPLÔMES FÉDÉRAUX ORTRA MA · MÉDECINE TRADITIONNELLE NATURELLE EUROPÉENNE',
 	AYU: 'DIPLÔMES FÉDÉRAUX ORTRA MA · AYURVÉDA',
 	PASS: 'ANNÉE PASSERELLE · CONNAISSANCES MÉDICALES ORTRA',
 	TC: 'DIPLÔMES FÉDÉRAUX ORTRA TC · TRONC COMMUN',
+	KINE: 'DIPLÔMES FÉDÉRAUX ORTRA TC · KINÉSIOLOGIE',
+	REFL: 'DIPLÔMES FÉDÉRAUX ORTRA TC · RÉFLEXOLOGIE',
+	CRAN: 'DIPLÔMES FÉDÉRAUX ORTRA TC · THÉRAPIE CRÂNIOSACRÉE',
+	MTC: 'DIPLÔMES FÉDÉRAUX ORTRA MA · MÉDECINE TRADITIONNELLE CHINOISE',
+	HOM: 'DIPLÔMES FÉDÉRAUX ORTRA MA · HOMÉOPATHIE',
 };
 
 export const FOOTER_SUBLINE =

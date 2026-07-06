@@ -4,6 +4,7 @@ import type {
 	Holiday,
 	Programme,
 	Session,
+	Shifted,
 	VoleeConfig,
 	VoleeData,
 } from '../types';
@@ -106,6 +107,23 @@ export function isExam(description: string): boolean {
 	return EXAM_RE.test(description);
 }
 
+const ONLINE_RE = /en\s?ligne|online|visio|distanciel|zoom|teams|webinaire|soir/i;
+
+/**
+ * True if the horaire denotes an evening / online session (e.g. "18h00-22h00 en ligne").
+ * Detected from an online keyword or a start time at or after 17h.
+ */
+export function isEveningHoraire(horaire: string): boolean {
+	if (!horaire) return false;
+	if (ONLINE_RE.test(horaire)) return true;
+	const m = horaire.match(/(\d{1,2})\s*[h:.]/);
+	if (m) {
+		const hr = Number(m[1]);
+		if (hr >= 17 && hr <= 23) return true;
+	}
+	return false;
+}
+
 /**
  * Parse the raw matrix of a volée tab into sessions.
  * Columns (0-based): B=1 date, C=2 weekday, D=3 horaires, F=5 module, G=6 description.
@@ -123,12 +141,14 @@ export function parseSessions(rows: string[][], projectionOffset = 0): Session[]
 		if (!moduleRaw) continue;
 		if (projectionOffset) date = addDays(date, projectionOffset);
 		const description = (row[6] ?? '').trim();
+		const horaire = (row[3] ?? '').trim();
 		out.push({
 			date,
 			module: moduleRaw,
 			description,
-			horaire: (row[3] ?? '').trim(),
+			horaire,
 			isExam: isExam(description),
+			evening: isEveningHoraire(horaire),
 		});
 	}
 	return out;
@@ -171,17 +191,36 @@ export function aggregateDays(sessions: Session[], config: VoleeConfig): CourseD
 	const days: CourseDay[] = [];
 	for (const [key, arr] of byDay) {
 		const module = dominantModule(arr.map((s) => s.module), config.prog);
+		const eveningCount = arr.filter((s) => s.evening).length;
 		days.push({
 			date: arr[0].date,
 			iso: key,
 			module,
 			isExam: arr.some((s) => s.isExam),
+			evening: eveningCount * 2 >= arr.length, // majority of the day's sessions are evening/online
 			sessionCount: arr.length,
 			unknownModule: !knownModules.has(module),
 		});
 	}
 	days.sort((a, b) => a.date.getTime() - b.date.getTime());
 	return days;
+}
+
+/**
+ * Find a nearby free date (not a holiday, not already occupied, a weekday) to shift a course
+ * off a holiday, preserving the total day count. Tries −1, +1, −2, +2… up to ±7 days.
+ */
+function findFreeDay(date: Date, holidaySet: Set<string>, occupied: Set<string>): Date | null {
+	const offsets = [-1, 1, -2, 2, -3, 3, -4, 4, -5, 5, -6, 6, -7, 7];
+	for (const off of offsets) {
+		const cand = addDays(date, off);
+		const wd = cand.getDay();
+		if (wd === 0 || wd === 6) continue; // keep it on a weekday
+		const ci = iso(cand);
+		if (holidaySet.has(ci) || occupied.has(ci)) continue;
+		return cand;
+	}
+	return null;
 }
 
 /**
@@ -194,14 +233,45 @@ export function buildVoleeData(
 	holidays: Holiday[],
 	projectionOffset = 0,
 ): VoleeData {
+	const projecting = projectionOffset !== 0;
 	const sessions = parseSessions(rows, projectionOffset);
 	const allDays = aggregateDays(sessions, config);
 	const holidaySet = new Set(holidays.map((h) => h.date));
 
+	// First pass: keep the days that don't collide with a holiday.
 	const days: CourseDay[] = [];
-	const displaced: Displaced[] = [];
+	const collisions: CourseDay[] = [];
+	const occupied = new Set<string>();
 	for (const d of allDays) {
 		if (holidaySet.has(d.iso)) {
+			collisions.push(d);
+		} else {
+			days.push(d);
+			occupied.add(d.iso);
+		}
+	}
+
+	// Second pass: resolve collisions. In projection mode we preserve the day count by shifting
+	// the course to a nearby free date (typically Easter-driven holidays that move year to year);
+	// otherwise the day is dropped and reported under "cours à reporter".
+	const displaced: Displaced[] = [];
+	const shifted: Shifted[] = [];
+	for (const d of collisions) {
+		const target = projecting ? findFreeDay(d.date, holidaySet, occupied) : null;
+		if (target) {
+			const ti = iso(target);
+			occupied.add(ti);
+			const moved: CourseDay = { ...d, date: target, iso: ti };
+			days.push(moved);
+			shifted.push({
+				fromIso: d.iso,
+				toIso: ti,
+				date: target,
+				weekday: WEEKDAYS_FULL[target.getDay()],
+				module: d.module,
+				volee: config.titre,
+			});
+		} else {
 			displaced.push({
 				iso: d.iso,
 				date: d.date,
@@ -209,24 +279,27 @@ export function buildVoleeData(
 				module: d.module,
 				volee: config.titre,
 			});
-		} else {
-			days.push(d);
 		}
 	}
+	days.sort((a, b) => a.date.getTime() - b.date.getTime());
 
 	const moduleCounts: Record<string, number> = {};
 	const unknown = new Set<string>();
+	let hasEvening = false;
 	for (const d of days) {
 		moduleCounts[d.module] = (moduleCounts[d.module] ?? 0) + 1;
 		if (d.unknownModule) unknown.add(d.module);
+		if (d.evening) hasEvening = true;
 	}
 
 	return {
 		config,
 		days,
 		displaced,
+		shifted,
 		moduleCounts,
 		total: days.length,
+		hasEvening,
 		unknownModules: [...unknown],
 	};
 }

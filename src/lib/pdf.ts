@@ -1,6 +1,7 @@
 import { jsPDF } from 'jspdf';
 import { svg2pdf } from 'svg2pdf.js';
 import { CAL_W, CAL_H, renderCalendarSVG, type RenderOptions } from './render';
+import { uploadedPoppins } from '../store/fonts';
 
 /** Poppins weights we embed for vectorial PDF text. Sourced from the Google Fonts mirror on jsDelivr. */
 const POPPINS_FILES: { weight: number; file: string }[] = [
@@ -25,8 +26,11 @@ function abToBase64(buf: ArrayBuffer): string {
 }
 
 async function loadPoppins(): Promise<{ weight: number; b64: string }[] | null> {
-	if (fontCache) return fontCache;
-	if (fontLoadFailed) return null;
+	// Prefer fonts uploaded by the user (works offline, no network dependency).
+	const uploaded = uploadedPoppins();
+	if (uploaded.length === 4) return uploaded;
+	if (fontCache) return uploaded.length ? mergeWeights(uploaded, fontCache) : fontCache;
+	if (fontLoadFailed) return uploaded.length ? uploaded : null;
 	try {
 		const loaded = await Promise.all(
 			POPPINS_FILES.map(async ({ weight, file }) => {
@@ -37,11 +41,21 @@ async function loadPoppins(): Promise<{ weight: number; b64: string }[] | null> 
 			}),
 		);
 		fontCache = loaded;
-		return loaded;
+		return uploaded.length ? mergeWeights(uploaded, loaded) : loaded;
 	} catch {
 		fontLoadFailed = true;
-		return null;
+		return uploaded.length ? uploaded : null;
 	}
+}
+
+/** Uploaded weights take precedence over fetched ones. */
+function mergeWeights(
+	primary: { weight: number; b64: string }[],
+	fallback: { weight: number; b64: string }[],
+): { weight: number; b64: string }[] {
+	const byWeight = new Map(fallback.map((f) => [f.weight, f]));
+	for (const p of primary) byWeight.set(p.weight, p);
+	return [...byWeight.values()];
 }
 
 function registerFonts(doc: jsPDF, fonts: { weight: number; b64: string }[]) {

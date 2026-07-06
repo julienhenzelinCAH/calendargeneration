@@ -4,10 +4,13 @@ import {
 	jeuneFederal,
 	iso,
 	isExam,
+	isEveningHoraire,
 	dominantModule,
 	moduleWeekdayHint,
 	vaudHolidays,
+	buildVoleeData,
 } from './calendar';
+import type { VoleeConfig } from '../types';
 import { parseDateLocal } from './csv';
 import type { CourseDay } from '../types';
 
@@ -105,6 +108,7 @@ describe('moduleWeekdayHint', () => {
 		iso: isoStr,
 		module,
 		isExam: false,
+		evening: false,
 		sessionCount: 1,
 		unknownModule: false,
 	});
@@ -112,5 +116,42 @@ describe('moduleWeekdayHint', () => {
 		// All Thursdays
 		const days = ['2026-08-06', '2026-08-13', '2026-08-20'].map((d) => day(d, 'M2'));
 		expect(moduleWeekdayHint(days, 'M2')).toBe('jeudis');
+	});
+});
+
+describe('isEveningHoraire', () => {
+	it('detects evening / online sessions', () => {
+		expect(isEveningHoraire('18h00-22h00 en ligne')).toBe(true);
+		expect(isEveningHoraire('18:00 - 22:00')).toBe(true);
+		expect(isEveningHoraire('en ligne')).toBe(true);
+	});
+	it('ignores full-day sessions', () => {
+		expect(isEveningHoraire('08:30-16:30')).toBe(false);
+		expect(isEveningHoraire('09h00 à 12h00')).toBe(false);
+	});
+});
+
+describe('projection preserves the day count (shifts off holidays)', () => {
+	const config: VoleeConfig = { id: 't', onglet: 't', prog: 'MTE', titre: 'Test', sousTitre: '' };
+	// A Friday course that will collide with Vendredi Saint after projection.
+	const rows = [
+		['', 'Date', '', 'Horaire', '', 'Module', 'Desc'],
+		['', '26.03.2027', '', '08:30-16:30', '', 'M2', ''], // becomes a course; will be projected +364 j
+	];
+	it('shifts a collided day to a nearby free date instead of dropping it', () => {
+		// 26.03.2027 + 364 j = 24.03.2028; make that a holiday to force a shift.
+		const holidays = [{ id: 'h', date: '2028-03-24', label: 'Vendredi Saint' }];
+		const data = buildVoleeData(rows, config, holidays, 364);
+		expect(data.total).toBe(1); // count preserved
+		expect(data.displaced.length).toBe(0);
+		expect(data.shifted.length).toBe(1);
+		expect(data.days[0].iso).not.toBe('2028-03-24');
+	});
+	it('without projection, a collided day is dropped to displaced', () => {
+		const holidays = [{ id: 'h', date: '2027-03-26', label: 'Vendredi Saint' }];
+		const data = buildVoleeData(rows, config, holidays, 0);
+		expect(data.total).toBe(0);
+		expect(data.displaced.length).toBe(1);
+		expect(data.shifted.length).toBe(0);
 	});
 });

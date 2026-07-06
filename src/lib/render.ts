@@ -113,7 +113,7 @@ export function renderCalendarSVG(o: RenderOptions): string {
 	const cellW = (gridW - (cols - 1) * colGap) / cols;
 	const cellH = (gridH - (rows - 1) * rowGap) / rows;
 
-	const dayMap = new Map(data.days.map((d) => [d.iso, d]));
+	const dayMap = new Map(data.days.map((d) => [d.iso, d] as const));
 	const holidaySet = new Set(holidays.map((h) => h.date));
 
 	for (let i = 0; i < 12; i++) {
@@ -128,6 +128,11 @@ export function renderCalendarSVG(o: RenderOptions): string {
 	const legY = 1904;
 	parts.push(roundRect(84, legY - 13, 18, 18, 3, { fill: '#fff', stroke: INK, strokeW: 1.4, dash: '3 2' }));
 	parts.push(text(112, legY + 1, "examens d'évaluation", { size: 15, weight: 400, fill: MUTED }));
+	if (data.hasEvening) {
+		const ex = 372;
+		parts.push(`<circle cx="${ex + 9}" cy="${legY - 4}" r="4.2" fill="${INK}"/>`);
+		parts.push(text(ex + 22, legY + 1, '18h–22h en ligne', { size: 15, weight: 400, fill: MUTED }));
+	}
 
 	// —— 6. Footer ——
 	const footY = 1958;
@@ -158,7 +163,7 @@ function renderMonth(
 	data: VoleeData,
 	prog: Programme,
 	palettes: Record<Programme, Record<string, ModuleColor>>,
-	dayMap: Map<string, { module: string; isExam: boolean }>,
+	dayMap: Map<string, { module: string; isExam: boolean; evening: boolean }>,
 	holidaySet: Set<string>,
 ): string {
 	const p: string[] = [];
@@ -233,6 +238,10 @@ function renderMonth(
 				p.push(roundRect(pillX, pillY, pillW, pillH, 6, { stroke: INK, strokeW: 1.3, dash: '3 2' }));
 			}
 			p.push(text(slotCX, numBaseline, String(d), { size: 15.5, weight: 600, fill: col.dark, anchor: 'middle' }));
+			if (course.evening) {
+				// small dot marking an evening / online session (e.g. 18h–22h en ligne)
+				p.push(`<circle cx="${pillX + pillW - 5.5}" cy="${pillY + pillH - 5.5}" r="2.6" fill="${col.dark}"/>`);
+			}
 		} else {
 			p.push(text(slotCX, numBaseline, String(d), { size: 15.5, weight: 400, fill: EMPTY, anchor: 'middle' }));
 		}

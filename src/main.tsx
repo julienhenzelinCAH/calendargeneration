@@ -3,6 +3,9 @@ import { createRoot } from 'react-dom/client';
 import './index.css';
 import { App } from './App';
 import { AppStoreProvider } from './store/AppStore';
+import { initCustomFonts } from './store/fonts';
+
+initCustomFonts();
 
 createRoot(document.getElementById('root')!).render(
 	<StrictMode>

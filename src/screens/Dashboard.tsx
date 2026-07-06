@@ -3,7 +3,7 @@ import { useStore } from '../store/AppStore';
 import { orderedModules } from '../lib/calendar';
 import { moduleColor } from '../volees.config';
 import type { ScreenKey } from '../App';
-import type { Displaced } from '../types';
+import type { Displaced, Shifted } from '../types';
 
 function YearSelect() {
 	const { year, setYear } = useStore();
@@ -82,12 +82,17 @@ export function Dashboard({ goto }: { goto: (s: ScreenKey) => void }) {
 	const { volees, selectedIds, year, projection } = store;
 
 	const allDisplaced: Displaced[] = [];
+	const allShifted: Shifted[] = [];
 	for (const v of volees) {
 		if (!selectedIds.includes(v.id)) continue;
 		const data = store.voleeData(v);
-		if (data) allDisplaced.push(...data.displaced);
+		if (data) {
+			allDisplaced.push(...data.displaced);
+			allShifted.push(...data.shifted);
+		}
 	}
 	allDisplaced.sort((a, b) => a.date.getTime() - b.date.getTime());
+	allShifted.sort((a, b) => a.date.getTime() - b.date.getTime());
 
 	return (
 		<div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -202,6 +207,12 @@ export function Dashboard({ goto }: { goto: (s: ScreenKey) => void }) {
 									{data.displaced.length} cours à reporter (collision férié)
 								</p>
 							)}
+							{data && data.shifted.length > 0 && (
+								<p style={{ margin: '8px 0 0', fontSize: 12, color: 'var(--color-gold-hover)' }}>
+									<Icon name="arrow-path" size={13} style={{ marginRight: 4 }} />
+									{data.shifted.length} cours décalé{data.shifted.length > 1 ? 's' : ''} (férié projeté) — nombre de jours préservé
+								</p>
+							)}
 						</div>
 					);
 				})}
@@ -232,6 +243,41 @@ export function Dashboard({ goto }: { goto: (s: ScreenKey) => void }) {
 										<td style={{ padding: '8px 10px' }}>{d.weekday}</td>
 										<td style={{ padding: '8px 10px' }}>{d.module}</td>
 										<td style={{ padding: '8px 10px' }}>{d.volee}</td>
+									</tr>
+								))}
+							</tbody>
+						</table>
+					</div>
+				</Card>
+			)}
+
+			{allShifted.length > 0 && (
+				<Card
+					title="Cours décalés (projection)"
+					subtitle="Cours tombant sur un férié projeté — déplacés vers une date libre proche pour préserver le nombre de jours"
+					icon={<Icon name="arrow-path" size={22} style={{ color: 'var(--color-gold)' }} />}
+				>
+					<div style={{ overflowX: 'auto' }}>
+						<table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+							<thead>
+								<tr style={{ textAlign: 'left', color: 'var(--text-muted)', fontSize: 12.5 }}>
+									<th style={{ padding: '6px 10px', fontWeight: 500 }}>Date d’origine</th>
+									<th style={{ padding: '6px 10px', fontWeight: 500 }}>Décalé au</th>
+									<th style={{ padding: '6px 10px', fontWeight: 500 }}>Jour</th>
+									<th style={{ padding: '6px 10px', fontWeight: 500 }}>Module</th>
+									<th style={{ padding: '6px 10px', fontWeight: 500 }}>Volée</th>
+								</tr>
+							</thead>
+							<tbody>
+								{allShifted.map((s, i) => (
+									<tr key={`${s.volee}-${s.fromIso}-${i}`} style={{ borderTop: '1px solid var(--zinc-100)' }}>
+										<td style={{ padding: '8px 10px', fontFamily: 'ui-monospace, monospace' }}>{s.fromIso}</td>
+										<td style={{ padding: '8px 10px', fontFamily: 'ui-monospace, monospace', color: 'var(--color-gold-hover)' }}>
+											{s.date.toLocaleDateString('fr-CH')}
+										</td>
+										<td style={{ padding: '8px 10px' }}>{s.weekday}</td>
+										<td style={{ padding: '8px 10px' }}>{s.module}</td>
+										<td style={{ padding: '8px 10px' }}>{s.volee}</td>
 									</tr>
 								))}
 							</tbody>
