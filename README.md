@@ -54,6 +54,17 @@ modules, sa priorité de module et son pied de page par défaut (éditables) :
   (`BP1`, `BP2`, `BS`, `BM1`, `BM2`, `BM3`).
 - **MTC / HOM** (ORTRA MA) : modules `M2`, `M1`, `MP`.
 
+### Modules partagés entre volées
+
+Certaines volées suivent des modules **avec la volée d'un autre programme du même niveau d'année**
+(p. ex. AYU n'a pas ses propres `M1`/`MP` : ses étudiant·e·s les suivent avec la volée MTE
+correspondante — Bilva A1 avec Gentiana A1, Asoka A2 avec Malva A2).
+
+Dans **Configuration → Volées → Modules partagés**, on peut définir, par volée, une ou plusieurs
+**sources** : une autre volée + les codes de modules à reprendre (vide = tous). Le calendrier fusionne
+alors les dates propres de la volée avec les dates des modules importés (comptes, pastilles et PDF
+inclus). Les paires AYU↔MTE ci-dessus sont pré-configurées par défaut.
+
 ### Polices personnalisées
 
 Dans **Configuration → Polices personnalisées**, importe tes fichiers de police

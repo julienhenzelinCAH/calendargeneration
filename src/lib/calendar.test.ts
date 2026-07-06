@@ -9,6 +9,7 @@ import {
 	moduleWeekdayHint,
 	vaudHolidays,
 	buildVoleeData,
+	parseSharedSessions,
 } from './calendar';
 import type { VoleeConfig } from '../types';
 import { parseDateLocal } from './csv';
@@ -153,5 +154,31 @@ describe('projection preserves the day count (shifts off holidays)', () => {
 		expect(data.total).toBe(0);
 		expect(data.displaced.length).toBe(1);
 		expect(data.shifted.length).toBe(0);
+	});
+});
+
+describe('shared modules from another volée (AYU reuses MTE M1/MP)', () => {
+	const ayu: VoleeConfig = { id: 'ayu', onglet: 'ayu', prog: 'AYU', titre: 'AYU Bilva', sousTitre: '' };
+	const ayuRows = [
+		['', 'Date', '', 'Horaire', '', 'Module', 'Desc'],
+		['', '06.08.2026', '', '08:30', '', 'M2', ''], // AYU own M2 (Thursday)
+		['', '13.08.2026', '', '08:30', '', 'M2', ''],
+	];
+	const mteRows = [
+		['', 'Date', '', 'Horaire', '', 'Module', 'Desc'],
+		['', '04.08.2026', '', '08:30', '', 'M1', ''], // MTE M1 (Tuesday)
+		['', '05.08.2026', '', '08:30', '', 'MP', ''], // MTE MP (Wednesday)
+		['', '11.08.2026', '', '08:30', '', 'M2', ''], // MTE own M2 — must NOT be imported
+	];
+	it('imports only the requested modules and adds them to the count', () => {
+		const shared = parseSharedSessions(mteRows, ['M1', 'MP'], 0);
+		expect(shared.map((s) => s.module).sort()).toEqual(['M1', 'MP']);
+		const data = buildVoleeData(ayuRows, ayu, [], 0, shared);
+		expect(data.total).toBe(4); // 2 own M2 + M1 + MP
+		expect(data.moduleCounts).toEqual({ M2: 2, M1: 1, MP: 1 });
+	});
+	it('empty module list imports all modules of the source', () => {
+		const shared = parseSharedSessions(mteRows, [], 0);
+		expect(shared.length).toBe(3);
 	});
 });

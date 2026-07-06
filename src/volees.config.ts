@@ -8,8 +8,22 @@ export const DEFAULT_VOLEES: VoleeConfig[] = [
 	{ id: 'gentiana', onglet: 'MTE Gentiana 13 3 ans', prog: 'MTE', titre: 'MTE Gentiana', sousTitre: 'Volée Gentiana (A1) · 3 ans' },
 	{ id: 'malva', onglet: 'MTE Malva 23 3 ans', prog: 'MTE', titre: 'MTE Malva', sousTitre: 'Volée Malva (A2) · 3 ans' },
 	{ id: 'arnica', onglet: 'MTE Arnica 33 3 ans', prog: 'MTE', titre: 'MTE Arnica', sousTitre: 'Volée Arnica (A3) · 3 ans' },
-	{ id: 'bilva', onglet: 'AYU THE Bilva 13 3 ans', prog: 'AYU', titre: 'AYU Bilva', sousTitre: 'Volée Bilva (A1) · 3 ans · théorie' },
-	{ id: 'asoka', onglet: 'AYU Asoka 23 3 ans', prog: 'AYU', titre: 'AYU Asoka', sousTitre: 'Volée Asoka (A2) · 3 ans' },
+	{
+		id: 'bilva',
+		onglet: 'AYU THE Bilva 13 3 ans',
+		prog: 'AYU',
+		titre: 'AYU Bilva',
+		sousTitre: 'Volée Bilva (A1) · 3 ans · théorie',
+		shared: [{ sourceId: 'gentiana', modules: ['M1', 'MP'] }], // M1/MP suivis avec MTE Gentiana (A1)
+	},
+	{
+		id: 'asoka',
+		onglet: 'AYU Asoka 23 3 ans',
+		prog: 'AYU',
+		titre: 'AYU Asoka',
+		sousTitre: 'Volée Asoka (A2) · 3 ans',
+		shared: [{ sourceId: 'malva', modules: ['M1', 'MP'] }], // M1/MP suivis avec MTE Malva (A2)
+	},
 	{ id: 'rosmarinus', onglet: 'PASS Rosmarinus 26-27', prog: 'PASS', titre: 'PASS Rosmarinus', sousTitre: 'Volée Rosmarinus · Année passerelle' },
 	{ id: 'neon', onglet: 'Com TC Neon 26-26', prog: 'TC', titre: 'Tronc commun Néon', sousTitre: 'Volée Néon (A1) · Ortra TC' },
 ];

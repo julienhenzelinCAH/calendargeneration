@@ -227,14 +227,23 @@ function findFreeDay(date: Date, holidaySet: Set<string>, occupied: Set<string>)
  * Build full VoleeData: aggregate, remove holiday collisions (moving them to `displaced`),
  * and count modules over the kept days.
  */
+/** Parse a source tab, keeping only the modules borrowed by another volée (empty = all). */
+export function parseSharedSessions(rows: string[][], modules: string[], projectionOffset = 0): Session[] {
+	const all = parseSessions(rows, projectionOffset);
+	if (modules.length === 0) return all;
+	const wanted = new Set(modules.map((m) => m.toUpperCase()));
+	return all.filter((s) => wanted.has(s.module));
+}
+
 export function buildVoleeData(
 	rows: string[][],
 	config: VoleeConfig,
 	holidays: Holiday[],
 	projectionOffset = 0,
+	extraSessions: Session[] = [],
 ): VoleeData {
 	const projecting = projectionOffset !== 0;
-	const sessions = parseSessions(rows, projectionOffset);
+	const sessions = [...parseSessions(rows, projectionOffset), ...extraSessions];
 	const allDays = aggregateDays(sessions, config);
 	const holidaySet = new Set(holidays.map((h) => h.date));
 

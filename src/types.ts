@@ -2,6 +2,15 @@ export type Programme = 'MTE' | 'AYU' | 'PASS' | 'TC' | 'KINE' | 'REFL' | 'CRAN'
 
 export type ModuleColor = { dark: string; light: string };
 
+/**
+ * A module borrowed from another volée: e.g. AYU has no M1/MP of its own but attends them with
+ * the MTE cohort of the same year. `modules` empty means "all modules of the source".
+ */
+export interface SharedSource {
+	sourceId: string; // id of the volée whose dates are reused
+	modules: string[]; // module codes to import (e.g. ['M1', 'MP']); empty = all
+}
+
 /** Configuration of a single volée (cohort) mapping a sheet tab to a programme. */
 export interface VoleeConfig {
 	id: string;
@@ -9,6 +18,7 @@ export interface VoleeConfig {
 	prog: Programme;
 	titre: string;
 	sousTitre: string;
+	shared?: SharedSource[]; // modules taught jointly with another volée
 }
 
 /** One session (half-day) read from the sheet. */

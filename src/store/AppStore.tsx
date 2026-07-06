@@ -6,7 +6,8 @@ import {
 	DEFAULT_SHEET_ID,
 	DEFAULT_VOLEES,
 } from '../volees.config';
-import { buildVoleeData, vaudHolidays } from '../lib/calendar';
+import { buildVoleeData, parseSharedSessions, vaudHolidays } from '../lib/calendar';
+import type { Session } from '../types';
 import { fetchSheetTab, sheetIdFromInput } from '../lib/csv';
 import { lsGet, lsSet } from './storage';
 import { ALL_PROGRAMMES } from '../volees.config';
@@ -234,9 +235,17 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
 		(config: VoleeConfig): VoleeData | null => {
 			const matrix = raw[config.onglet];
 			if (!matrix) return null;
-			return buildVoleeData(matrix, config, holidays, projection ? PROJECTION_OFFSET : 0);
+			const offset = projection ? PROJECTION_OFFSET : 0;
+			// Merge modules taught jointly with another volée (e.g. AYU reuses MTE's M1/MP dates).
+			const extra: Session[] = [];
+			for (const sh of config.shared ?? []) {
+				const src = volees.find((v) => v.id === sh.sourceId);
+				const srcRows = src ? raw[src.onglet] : undefined;
+				if (srcRows) extra.push(...parseSharedSessions(srcRows, sh.modules, offset));
+			}
+			return buildVoleeData(matrix, config, holidays, offset, extra);
 		},
-		[raw, holidays, projection],
+		[raw, holidays, projection, volees],
 	);
 
 	const value = useMemo<AppStoreValue>(
